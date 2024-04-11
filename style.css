@@ -1,0 +1,142 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #121111;
+  height: 100vh; /* Full viewport height */
+}
+
+#main-container {
+  display: flex;
+  justify-content: center; /* Center children */
+  align-items: flex-start; /* Align children at the top */
+  height: 100%; /* Full height of the parent */
+  padding: 20px; /* Add some padding around */
+  box-sizing: border-box; /* Include padding in the width calculation */
+}
+
+#chat-container {
+  width: 80%;
+  margin-right: 2%; /* Space between chat and advertisement */
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  height: 95vh; /* Now it takes 80% of the viewport height */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Ensures input and button stick to the bottom */
+ 
+}
+
+#chat-box {
+  height: calc(100% - 60px); /* Adjust this value based on the total height of input-wrapper */
+  overflow-y: scroll;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.message {
+  padding: 10px;
+  border-radius: 20px;
+  color: #fff;
+  max-width: 60%;
+}
+
+.user-message {
+  background-color: #007bff;
+  align-self: flex-end;
+}
+
+.bot-message {
+  background-color: #666;
+  align-self: flex-start;
+}
+
+#user-input, button {
+  flex: 1; /* Both input and button will take equal space */
+    padding: 10px;
+    border: none;
+    margin: 0; /* Remove any default margin */
+    outline: none;
+    height: 25px; /* Give a fixed height to both elements */
+}
+
+
+#user-input {
+  flex-grow: 8; /* Input will fill the extra space */
+  padding: 10px; /* Padding inside the input */
+  margin: 0; /* Remove any default margin */
+  border: none; /* No border for input */
+  border-top: 1px solid #ccc; /* Top border for separating from the chat box */
+  height: 30px; /* Match the button height */
+}
+
+button {
+  flex-grow: 2;
+  font-size: 20px; /* Adjust size as needed */
+  padding: 10px; /* Padding around the icon */
+  border: none;
+  background-color: #49dd52;
+  color: white;
+  cursor: pointer;
+  text-align: center;
+  margin: 0;
+  border-left: 1px solid #ccc; /* Separates button from input */
+  height: 50px; /* Match the input height */
+  width: auto; /* Allow the width to auto-adjust to content */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#advertisement-container {
+  width: 20%; /* Less 2% for the margin of chat-container */
+  background-color: #f2f2f2;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 600px; /* Match the chat container height */
+    display: block; /* This is usually default but just to make sure */
+    text-align: center; /* Optional: Centers the content */
+
+}
+
+#advertisement-container ul {
+  list-style-type: none; /* Removes default list styling */
+  padding: 0; /* Removes default padding */
+  margin: 0; /* Removes default margin */
+}
+
+#advertisement-container li {
+  margin-bottom: 10px; /* Space between list items */
+}
+
+#advertisement-container a {
+  display: block; /* Makes the link fill the container */
+  padding: 10px; /* Padding for visual appearance */
+  background-color: #f2f2f2; /* Background color */
+  color: #000; /* Text color */
+  text-decoration: none; /* Removes underline from links */
+  border-radius: 5px; /* Optional: Adds rounded corners to the links */
+  transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+#advertisement-container a:hover {
+  background-color: #ddd; /* Changes background color on hover */
+}
+
+
+
+.input-wrapper {
+  display: flex; /* Align children (input and button) in a row */
+  padding: 0;
+  margin: 0;
+}
+
