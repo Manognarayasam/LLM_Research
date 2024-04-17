@@ -38,10 +38,10 @@ function getResponse(message) {
   return "Sorry, I didn't understand that.";
 }
 
-function sendMessage() {
+function sendMessage(message) {
   const input = document.getElementById("user-input");
   const chatBox = document.getElementById("chat-box");
-  const userText = input.value.trim();
+  const userText = message ? message.trim() : input.value.trim(); // Use the provided message or input value
 
   if (userText !== "") {
     // Display user message
@@ -57,8 +57,11 @@ function sendMessage() {
       userName = userText;
       botResponse = `Nice to meet you, ${userName}! How can I assist you today?`;
       askingName = false; // Set the flag to false as the name has been captured
+    } else if (userText.toLowerCase() === "Question-1") {
+      // Ask for details about Question-1
+      botResponse = "Please explain what is the exact Question-1 you have.";
     } else {
-      // Respond based on intents or continue conversation
+      // Handle other intents or continue conversation
       botResponse = userName
         ? getResponse(userText).replace(/USERNAME/g, userName)
         : getResponse(userText);
@@ -68,18 +71,45 @@ function sendMessage() {
     setTimeout(() => createBotMessage(botResponse), 1000); // Simulate reply delay
   }
 
-  // Clear input
-  input.value = "";
-  chatBox.scrollTop = chatBox.scrollHeight;
+  // Clear input if not using provided message
+  if (!message) {
+    input.value = "";
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
 }
 
 // Triggered when the chatbot is loaded
 window.onload = function () {
   createBotMessage(
-    "Welcome to our Survery today! These are general instructions before you take the survey"
+    "Welcome to our Survey today! These are general instructions before you take the survey"
   );
   createBotMessage("Hello, what is your name?");
+  setTimeout(() => showOptions(), 1000); // Delay showing options after the initial messages
 };
+
+function showOptions() {
+  const botMessage = document.createElement("div");
+  botMessage.className = "message bot-message";
+  botMessage.innerHTML = `
+    <p>Please select one of the following options:</p>
+    <ul>
+      <li><a href="#" onclick="selectOption('Question-1')">Question-1</a></li>
+      <li><a href="#" onclick="selectOption('Question-2')">Question-2</a></li>
+      <li><a href="#" onclick="selectOption('Other')">Other</a></li>
+    </ul>
+  `;
+  const chatBox = document.getElementById("chat-box");
+  chatBox.appendChild(botMessage);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function selectOption(option) {
+  if (option === "Question-1") {
+    sendMessage(option); // Send the selected option as a message to the sendMessage function
+  } else {
+    sendMessage(option); // For other options, send directly without asking for details
+  }
+}
 
 // Allow pressing Enter to send message
 const input = document.getElementById("user-input");
