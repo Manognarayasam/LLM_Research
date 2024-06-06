@@ -19,21 +19,27 @@
       </div>
       <div id="advertisement-container">
         <!-- Dummy Advertisement -->
+        <div class="card" onclick="openModal('Fur in Fashion', 'The State of California took a step further by banning the manufacture and sale of fur products in the entire state...')">
+          <h3>Fur in Fashion</h3>
+          <p>The State of California took a step further ...</p>
+          <p>Read More</p>
+           <!--<a href="https://example.com/link2" target="_blank">Read more</a> -->
+        </div>
+        <div class="card" onclick="openModal('Should Fur Be Illegal?', 'If you feel like getting threatened, here\'s an idea: Head to an anti-fur protest and mention child labor...')">
+          <h3>Should Fur Be Illegal?</h3>
+          <p>If you feel like getting threatened, here's an idea...</p>
+          <p>Read More</p>
+          <!--<a href="https://example.com/link2" target="_blank">Read more</a> -->
+        </div>
+      </div>
+    </div>
 
-        <ul>
-          <li>
-            <a href="https://example.com/link1" target="_blank">Article 1</a>
-          </li>
-          <li>
-            <a href="https://example.com/link2" target="_blank">Article 2</a>
-          </li>
-          <li>
-            <a href="https://example.com/link3" target="_blank">Article 3</a>
-          </li>
-          <li>
-            <a href="https://example.com/link4" target="_blank">Article 4</a>
-          </li>
-        </ul>
+    <!-- Modal Structure -->
+    <div id="myModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h3 id="modal-title"></h3>
+        <p id="modal-description"></p>
       </div>
     </div>
 
