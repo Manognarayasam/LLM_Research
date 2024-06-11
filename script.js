@@ -2,32 +2,35 @@ let userName = ""; // Variable to store the user's name
 let askingName = true; // Flag to check if the bot is asking for the user's name
 let chatLog = []; // Array to store the chat log
 
-const intents = {
-  greeting: {
-    utterances: ["hello", "hi", "hey"],
-    responses: [
-      "Hello there! What's your name?",
-      "Hi, how can I help you today?",
-      "Hey! Could you tell me your name, please?",
-    ],
-  },
-  farewell: {
-    utterances: ["bye", "goodbye", "see you"],
-    responses: ["Goodbye!", "See you later!", "Bye! Have a great day!"],
-  },
-  question1: {
-    utterances: ["question-1"],
-    responses: ["Please explain what is the exact Question-1 you have."],
-  },
-  question2: {
-    utterances: ["question-2"],
-    responses: ["Please explain what is the exact Question-2 you have."],
-  },
-  other: {
-    utterances: ["other"],
-    responses: ["Please provide more details about your question."],
-  },
-  // Add more intents and their corresponding utterances and responses here
+const cardContents = {
+  yes: [
+    {
+      title: "Fur in Fashion",
+      description:
+        "The State of California took a step further by banning the manufacture and sale of fur products in the entire state...",
+      content:
+        "The State of California took a step further by banning the manufacture and sale of fur products in the entire state...",
+    },
+    {
+      title: "Should Fur Be Illegal?",
+      description:
+        "If you feel like getting threatened, here's an idea: Head to an anti-fur protest and mention child labor...",
+      content:
+        "If you feel like getting threatened, here's an idea: Head to an anti-fur protest and mention child labor...",
+    },
+  ],
+  no: [
+    {
+      title: "Article 3",
+      description: "Description for article 3...",
+      content: "Full description for article 3...",
+    },
+    {
+      title: "Article 4",
+      description: "Description for article 4...",
+      content: "Full description for article 4...",
+    },
+  ],
 };
 
 const questions = {
@@ -45,6 +48,34 @@ const questions = {
     options: ["Education", "Legislation", "Activism"],
   },
 };
+
+const sampleQuestions = [
+  {
+    question: "What are the benefits of banning fur farming?",
+    answer:
+      "Banning fur farming reduces animal cruelty, promotes ethical fashion, and encourages the use of alternative materials.",
+  },
+  {
+    question: "How does legislation help prevent animal cruelty?",
+    answer:
+      "Legislation establishes laws and regulations that protect animals from abuse, ensuring their welfare and safety.",
+  },
+  {
+    question: "What role does education play in animal welfare?",
+    answer:
+      "Education raises awareness about animal rights, teaching people to treat animals with compassion and respect.",
+  },
+  {
+    question: "Why is activism important for animal rights?",
+    answer:
+      "Activism brings attention to animal cruelty issues, mobilizing people to take action and advocate for change.",
+  },
+  {
+    question: "What are some alternatives to using animal fur?",
+    answer:
+      "Alternatives to animal fur include synthetic fur, plant-based materials, and other sustainable options.",
+  },
+];
 
 function createBotMessage(text) {
   const chatBox = document.getElementById("chat-box");
@@ -115,16 +146,18 @@ function sendMessage(message) {
       // Handle the options "Yes" and "No"
       if (userText.toLowerCase() === "yes") {
         botResponse = questions.yesResponse.message;
+        displayCards("yes");
       } else if (userText.toLowerCase() === "no") {
         botResponse = questions.noResponse.message;
         createBotMessage(botResponse);
-        setTimeout(
-          () => createOptionButtons(questions.noResponse.options),
-          1000
-        );
+        setTimeout(() => {
+          createOptionButtons(questions.noResponse.options);
+          displayCards("no");
+        }, 1000);
         return; // Early return to avoid double response
       }
       createBotMessage(botResponse);
+      setTimeout(() => displayQuestionSet(), 1000); // Display the first set of questions
     } else {
       // Handle other intents or continue conversation
       botResponse = userName
@@ -141,17 +174,64 @@ function sendMessage(message) {
   }
 }
 
+// Function to display cards based on user response
+function displayCards(responseType) {
+  const container = document.getElementById("advertisement-container");
+  container.innerHTML = ""; // Clear existing cards
+  cardContents[responseType].forEach((card) => {
+    const cardElement = document.createElement("div");
+    cardElement.className = "card";
+    cardElement.innerHTML = `
+      <h3>${card.title}</h3>
+      <p>${card.description}</p>
+      <p>Read More</p>
+    `;
+    cardElement.onclick = () => openModal(card.title, card.content);
+    container.appendChild(cardElement);
+  });
+}
+
+// Function to display a set of questions
+function displayQuestionSet() {
+  const chatBox = document.getElementById("chat-box");
+  const questionSetContainer = document.createElement("div");
+  questionSetContainer.className = "question-set-container";
+
+  sampleQuestions.forEach((q, index) => {
+    const button = document.createElement("button");
+    button.className = "question-button";
+    button.textContent = q.question;
+    button.onclick = () => handleQuestionClick(index);
+    questionSetContainer.appendChild(button);
+  });
+
+  const skipButton = document.createElement("button");
+  skipButton.className = "question-button";
+  skipButton.textContent = "Skip and show another set of questions";
+  skipButton.onclick = () => skipQuestionSet();
+  questionSetContainer.appendChild(skipButton);
+
+  chatBox.appendChild(questionSetContainer);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function handleQuestionClick(index) {
+  const answer = sampleQuestions[index].answer;
+  createBotMessage(answer);
+}
+
+function skipQuestionSet() {
+  createBotMessage("Here is another set of questions:");
+  // Display the next set of questions (for simplicity, using the same set in this example)
+  setTimeout(() => displayQuestionSet(), 1000);
+}
+
 // Triggered when the chatbot is loaded
 window.onload = function () {
-  setTimeout(function () {
-    createBotMessage(
-      "Welcome to our survey today! These are the general instructions before you take the survey"
-    );
-  }, 500); // 3000 milliseconds = 3 seconds
-
-  setTimeout(function () {
-    createBotMessage("Hello, what is your name?");
-  }, 1000); // 3000 milliseconds = 3 seconds
+  createBotMessage(
+    "Welcome to our survey today! These are the general instructions before you take the survey"
+  );
+  createBotMessage("Hello, what is your name?");
 };
 
 function showOptions() {
