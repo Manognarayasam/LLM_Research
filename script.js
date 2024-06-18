@@ -1,81 +1,99 @@
 let userName = ""; // Variable to store the user's name
 let askingName = true; // Flag to check if the bot is asking for the user's name
-let chatLog = []; // Array to store the chat log
+let currentSetIndex = 0; // Track the current set of questions
+const userResponses = {}; // Object to store user responses
 
-const cardContents = {
-  yes: [
-    {
-      title: "Fur in Fashion",
-      description:
-        "The State of California took a step further by banning the manufacture and sale of fur products in the entire state...",
-      content:
-        "The State of California took a step further by banning the manufacture and sale of fur products in the entire state...",
-    },
-    {
-      title: "Should Fur Be Illegal?",
-      description:
-        "If you feel like getting threatened, here's an idea: Head to an anti-fur protest and mention child labor...",
-      content:
-        "If you feel like getting threatened, here's an idea: Head to an anti-fur protest and mention child labor...",
-    },
-  ],
-  no: [
-    {
-      title: "Article 3",
-      description: "Description for article 3...",
-      content: "Full description for article 3...",
-    },
-    {
-      title: "Article 4",
-      description: "Description for article 4...",
-      content: "Full description for article 4...",
-    },
-  ],
-};
-
-const questions = {
-  start: {
-    message:
-      "While banning fur clothing might reduce some animal cruelty, wouldn't animal cruelty still exist in other forms? What's the rationale behind banning it?",
-    options: ["Yes", "No"],
-  },
-  yesResponse: {
-    message:
-      "While animal cruelty may persist in other forms, banning fur farming is still a justifiable and important step. It intentionally inflicts cruelty on animals solely for the frivolous purpose of fashion, unlike accidental or byproduct cruelty, and operates on an immense industrial scale, enabling systematized mass cruelty towards millions of animals. There are readily available alternative materials, making the cruel fur trade unnecessary. Allowing it normalizes the idea that animal suffering for superficial human wants is acceptable. While imperfect, banning fur makes incremental progress by challenging institutionalized cruelty driven more by human vanity than necessity. Targeting the intentional, barbaric, profit-driven fur industry is a reasonable goal to reduce large-scale, gratuitous animal suffering.",
-  },
-  noResponse: {
-    message: "What are some other ways to prevent animal cruelty?",
-    options: ["Education", "Legislation", "Activism"],
-  },
-};
-
-const sampleQuestions = [
+const questionSets = [
   {
-    question: "What are the benefits of banning fur farming?",
-    answer:
-      "Banning fur farming reduces animal cruelty, promotes ethical fashion, and encourages the use of alternative materials.",
+    set: "Set-1",
+    questions: [
+      {
+        question:
+          "What impact does banning fur clothing have on the fashion industry?",
+        answer:
+          "Banning fur clothing pushes the fashion industry to innovate and adopt sustainable and cruelty-free materials.",
+      },
+      {
+        question:
+          "How does the public perceive the ban on fur clothing in terms of animal rights?",
+        answer:
+          "The public generally perceives the ban on fur clothing as a positive step towards better animal rights.",
+      },
+      {
+        question:
+          "What are the economic consequences for businesses involved in fur trade due to the ban on fur clothing?",
+        answer:
+          "Businesses involved in the fur trade face significant economic losses due to the ban but can pivot to alternative materials.",
+      },
+      {
+        question:
+          "What alternative materials are being promoted to replace fur in the fashion industry?",
+        answer:
+          "Materials such as synthetic fur, plant-based fibers, and recycled materials are being promoted to replace traditional fur.",
+      },
+    ],
   },
   {
-    question: "How does legislation help prevent animal cruelty?",
-    answer:
-      "Legislation establishes laws and regulations that protect animals from abuse, ensuring their welfare and safety.",
+    set: "Set-2",
+    questions: [
+      {
+        question:
+          "What are the key arguments for and against banning fur clothing?",
+        answer:
+          "Proponents argue it's ethical and promotes animal welfare, while opponents claim it affects livelihoods and tradition.",
+      },
+      {
+        question:
+          "How have different countries implemented regulations regarding fur clothing?",
+        answer:
+          "Countries vary in their approach; some have full bans while others have strict regulations to control the fur trade.",
+      },
+      {
+        question:
+          "What are the historical trends in the use of fur in fashion?",
+        answer:
+          "Fur has been a staple in fashion for centuries, but its use has declined with increasing awareness of animal rights.",
+      },
+      {
+        question:
+          "How does the ban on fur clothing affect consumer choices and preferences?",
+        answer:
+          "Consumers are gradually shifting towards cruelty-free and sustainable fashion choices due to increased awareness and availability of alternatives.",
+      },
+    ],
   },
   {
-    question: "What role does education play in animal welfare?",
-    answer:
-      "Education raises awareness about animal rights, teaching people to treat animals with compassion and respect.",
-  },
-  {
-    question: "Why is activism important for animal rights?",
-    answer:
-      "Activism brings attention to animal cruelty issues, mobilizing people to take action and advocate for change.",
-  },
-  {
-    question: "What are some alternatives to using animal fur?",
-    answer:
-      "Alternatives to animal fur include synthetic fur, plant-based materials, and other sustainable options.",
+    set: "Set-3",
+    questions: [
+      {
+        question:
+          "Could banning fur clothing inadvertently increase the use of other animal products in fashion?",
+        answer:
+          "It's possible that banning fur could lead to an increase in the use of other animal products, though public awareness may mitigate this.",
+      },
+      {
+        question:
+          "Is it hypocritical to ban fur clothing while other forms of animal exploitation continue in various industries?",
+        answer:
+          "This is a complex issue; while some see it as hypocritical, others view it as a step in the right direction.",
+      },
+      {
+        question:
+          "How might the ban on fur clothing impact indigenous communities that rely on fur for traditional practices and livelihoods?",
+        answer:
+          "Indigenous communities may face challenges; exceptions or support programs can help mitigate negative impacts.",
+      },
+      {
+        question:
+          "Could the fur ban lead to unintended environmental consequences by promoting synthetic alternatives?",
+        answer:
+          "Synthetic alternatives can have environmental impacts; promoting natural, sustainable options is crucial.",
+      },
+    ],
   },
 ];
+
+let cardContents = [];
 
 function createBotMessage(text) {
   const chatBox = document.getElementById("chat-box");
@@ -84,8 +102,15 @@ function createBotMessage(text) {
   botMessage.textContent = text;
   chatBox.appendChild(botMessage);
   chatBox.scrollTop = chatBox.scrollHeight;
-  chatLog.push({ sender: "bot", message: text }); // Add message to chat log
-  console.log(chatLog); // Print chat log to console
+}
+
+function createUserMessage(text) {
+  const chatBox = document.getElementById("chat-box");
+  const userMessage = document.createElement("div");
+  userMessage.className = "message user-message";
+  userMessage.textContent = text;
+  chatBox.appendChild(userMessage);
+  chatBox.scrollTop = chatBox.scrollHeight;
 }
 
 function createOptionButtons(options) {
@@ -93,28 +118,71 @@ function createOptionButtons(options) {
   const optionsContainer = document.createElement("div");
   optionsContainer.className = "options-container";
 
-  options.forEach((option) => {
+  options.forEach((option, index) => {
     const button = document.createElement("button");
     button.className = "option-button";
-    button.textContent = option;
-    button.onclick = () => handleOptionClick(option);
+    button.textContent = option.question;
+    button.onclick = () => handleOptionClick(option, index);
     optionsContainer.appendChild(button);
   });
+
+  const skipButton = document.createElement("button");
+  skipButton.className = "option-button";
+  skipButton.textContent = "Skip and show another set of questions";
+  skipButton.onclick = () => skipQuestionSet();
+  optionsContainer.appendChild(skipButton);
 
   chatBox.appendChild(optionsContainer);
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-function getResponse(message) {
-  for (const [intent, data] of Object.entries(intents)) {
-    for (const utterance of data.utterances) {
-      if (message.toLowerCase().includes(utterance)) {
-        const responseIndex = Math.floor(Math.random() * data.responses.length);
-        return data.responses[responseIndex];
-      }
-    }
+function handleOptionClick(option, index) {
+  createUserMessage(option.question);
+  setTimeout(() => {
+    createBotMessage(option.answer);
+    const timestamp = new Date().toLocaleString();
+    addToCards(option.question, option.answer, timestamp);
+    setTimeout(() => {
+      createBotMessage(
+        `Please select one of the questions from ${questionSets[currentSetIndex].set} or click "Skip and show another set of questions".`
+      );
+      createOptionButtons(questionSets[currentSetIndex].questions);
+    }, 1000);
+  }, 1000);
+}
+
+function addToCards(question, answer, timestamp) {
+  cardContents.push({ question, answer, timestamp });
+  displayCards();
+}
+
+function displayCards() {
+  const container = document.getElementById("advertisement-container");
+  container.innerHTML = ""; // Clear existing cards
+  cardContents.forEach((card) => {
+    const cardElement = document.createElement("div");
+    cardElement.className = "card";
+    cardElement.innerHTML = `
+      <h3>${card.question}</h3>
+      <p>${card.answer}</p>
+      <p class="timestamp">${card.timestamp}</p>
+    `;
+    container.appendChild(cardElement);
+  });
+}
+
+function skipQuestionSet() {
+  cardContents = []; // Clear previous set's cards
+  displayCards();
+  currentSetIndex++;
+  if (currentSetIndex >= questionSets.length) {
+    createBotMessage("Thank you for completing the survey!");
+    return;
   }
-  return "Sorry, I didn't understand that.";
+  createBotMessage(
+    `Here is ${questionSets[currentSetIndex].set} of questions:`
+  );
+  createOptionButtons(questionSets[currentSetIndex].questions);
 }
 
 function sendMessage(message) {
@@ -124,46 +192,27 @@ function sendMessage(message) {
 
   if (userText !== "") {
     // Display user message
-    const userMessage = document.createElement("div");
-    userMessage.className = "message user-message";
-    userMessage.textContent = userText;
-    chatBox.appendChild(userMessage);
-    chatLog.push({ sender: "user", message: userText }); // Add message to chat log
+    createUserMessage(userText);
 
-    let botResponse = "";
+    if (userText.toLowerCase() === "exit") {
+      createBotMessage("Thank you for completing the survey!");
+      return;
+    }
 
     if (askingName) {
       // Capture and store the user's name
       userName = userText;
-      botResponse = `Nice to meet you, ${userName}. Let's start the survey.`;
-      createBotMessage(botResponse);
+      createBotMessage(
+        `Nice to meet you, ${userName}. Let's start the survey.`
+      );
+      askingName = false;
+      // Ask the first set of questions
       setTimeout(() => {
-        createBotMessage(questions.start.message);
-        createOptionButtons(questions.start.options);
+        createBotMessage(
+          `Here is ${questionSets[currentSetIndex].set} of questions:`
+        );
+        createOptionButtons(questionSets[currentSetIndex].questions);
       }, 1000);
-      askingName = false; // Set the flag to false as the name has been captured
-    } else if (questions.start.options.includes(userText)) {
-      // Handle the options "Yes" and "No"
-      if (userText.toLowerCase() === "yes") {
-        botResponse = questions.yesResponse.message;
-        displayCards("yes");
-      } else if (userText.toLowerCase() === "no") {
-        botResponse = questions.noResponse.message;
-        createBotMessage(botResponse);
-        setTimeout(() => {
-          createOptionButtons(questions.noResponse.options);
-          displayCards("no");
-        }, 1000);
-        return; // Early return to avoid double response
-      }
-      createBotMessage(botResponse);
-      setTimeout(() => displayQuestionSet(), 1000); // Display the first set of questions
-    } else {
-      // Handle other intents or continue conversation
-      botResponse = userName
-        ? getResponse(userText).replace(/USERNAME/g, userName)
-        : getResponse(userText);
-      createBotMessage(botResponse);
     }
   }
 
@@ -174,89 +223,13 @@ function sendMessage(message) {
   }
 }
 
-// Function to display cards based on user response
-function displayCards(responseType) {
-  const container = document.getElementById("advertisement-container");
-  container.innerHTML = ""; // Clear existing cards
-  cardContents[responseType].forEach((card) => {
-    const cardElement = document.createElement("div");
-    cardElement.className = "card";
-    cardElement.innerHTML = `
-      <h3>${card.title}</h3>
-      <p>${card.description}</p>
-      <p>Read More</p>
-    `;
-    cardElement.onclick = () => openModal(card.title, card.content);
-    container.appendChild(cardElement);
-  });
-}
-
-// Function to display a set of questions
-function displayQuestionSet() {
-  const chatBox = document.getElementById("chat-box");
-  const questionSetContainer = document.createElement("div");
-  questionSetContainer.className = "question-set-container";
-
-  sampleQuestions.forEach((q, index) => {
-    const button = document.createElement("button");
-    button.className = "question-button";
-    button.textContent = q.question;
-    button.onclick = () => handleQuestionClick(index);
-    questionSetContainer.appendChild(button);
-  });
-
-  const skipButton = document.createElement("button");
-  skipButton.className = "question-button";
-  skipButton.textContent = "Skip and show another set of questions";
-  skipButton.onclick = () => skipQuestionSet();
-  questionSetContainer.appendChild(skipButton);
-
-  chatBox.appendChild(questionSetContainer);
-  chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-function handleQuestionClick(index) {
-  const answer = sampleQuestions[index].answer;
-  createBotMessage(answer);
-}
-
-function skipQuestionSet() {
-  createBotMessage("Here is another set of questions:");
-  // Display the next set of questions (for simplicity, using the same set in this example)
-  setTimeout(() => displayQuestionSet(), 1000);
-}
-
 // Triggered when the chatbot is loaded
 window.onload = function () {
   createBotMessage(
-    "Welcome to our survey today! These are the general instructions before you take the survey"
+    "Welcome to our survey today! These are general instructions before you take the survey."
   );
   createBotMessage("Hello, what is your name?");
 };
-
-function showOptions() {
-  const botMessage = document.createElement("div");
-  botMessage.className = "message bot-message";
-  botMessage.innerHTML = `
-    <p>Please select one of the following options:</p>
-    <ul>
-      <li><button class="option-button" onclick="selectOption('question-1')">Question-1</button></li>
-      <li><button class="option-button" onclick="selectOption('question-2')">Question-2</button></li>
-      <li><button class="option-button" onclick="selectOption('other')">Other</button></li>
-    </ul>
-  `;
-  const chatBox = document.getElementById("chat-box");
-  chatBox.appendChild(botMessage);
-  chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-function selectOption(option) {
-  sendMessage(option); // Send the selected option as a message to the sendMessage function
-}
-
-function handleOptionClick(option) {
-  sendMessage(option);
-}
 
 // Allow pressing Enter to send message
 const input = document.getElementById("user-input");
